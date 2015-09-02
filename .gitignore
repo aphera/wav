@@ -1,0 +1,5 @@
+out/
+*.wav
+.idea/
+*.iml
+*.txt
