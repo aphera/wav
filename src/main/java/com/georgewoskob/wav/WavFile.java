@@ -1,4 +1,4 @@
-package com.georgewoskob;// Wav file IO class
+package com.georgewoskob.wav;// Wav file IO class
 // A.Greensted
 // http://www.labbookpages.co.uk
 

@@ -1,4 +1,4 @@
-package com.georgewoskob;
+package com.georgewoskob.wav;
 
 import java.io.*;
 

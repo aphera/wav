@@ -1,4 +1,4 @@
-package com.georgewoskob;
+package com.georgewoskob.wav;
 
 public class WavFileException extends Exception
 {
