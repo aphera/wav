@@ -16,12 +16,12 @@ public class Main {
         WavTransformer wavTransformer = new WavTransformer();
         ArrayWriter arrayWriter = new ArrayWriter();
 
-        int[] wavArray = wavTransformer.wavToArray(new File("/Users/Thoughtworker/leave/wav/src/main/resources/snares.wav"));
+        double[] wavArray = wavTransformer.wavToArray(new File("/Users/Thoughtworker/leave/wav/src/main/resources/snares.wav"));
 
         File intermediateText = new File("/Users/Thoughtworker/leave/wav/intermediate.txt");
         arrayWriter.writeArrayToFile(intermediateText, wavArray);
 
-        int[] newWavArray = arrayWriter.wavArrayFromFile(intermediateText);
+        double[] newWavArray = arrayWriter.wavArrayFromFile(intermediateText);
 
         wavTransformer.writeTextToWave(newWavArray, new File("/Users/Thoughtworker/leave/wav/src/main/resources/test.wav"));
         wavTransformer.writeTextToWave(wavArray, new File("/Users/Thoughtworker/leave/wav/src/main/resources/test2.wav"));
