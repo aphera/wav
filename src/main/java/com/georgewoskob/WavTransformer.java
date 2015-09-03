@@ -8,7 +8,7 @@ import java.io.IOException;
 
 public class WavTransformer {
 
-    public void writeTextToWave(double[] wavArray, File outputWavFile) throws IOException, WavFileException {
+    public void writeArrayToWavFile(double[] wavArray, File outputWavFile) throws IOException, WavFileException {
         WavFile wavFile = WavFile.newWavFile(outputWavFile, 1, wavArray.length, 16, 44100);
 
         wavFile.writeFrames(wavArray, wavArray.length);
@@ -16,7 +16,7 @@ public class WavTransformer {
         wavFile.close();
     }
 
-    public double[] wavToArray(File waveFile) throws IOException, WavFileException {
+    public double[] readWavFileToArray(File waveFile) throws IOException, WavFileException {
         WavFile inputWavFile = WavFile.openWavFile(waveFile);
         inputWavFile.display();
         int numFrames = safeLongToInt(inputWavFile.getNumFrames());

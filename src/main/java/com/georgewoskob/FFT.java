@@ -10,13 +10,36 @@ import java.util.Arrays;
 import java.util.List;
 
 public class FFT {
-    public List<double[]> transform(double[] input, int windowSize) {
+    public List<double[]> transformForward(double[] input, int windowSize) {
+        List<double[]> windowList = splitWavIntoWindows(input, windowSize);
+
+        return transformWindows(windowList, TransformType.FORWARD);
+    }
+
+    public double[] transformBackward(List<double[]> input, int windowSize) {
+        List<double[]> doubles = transformWindows(input, TransformType.INVERSE);
+
+        return concatenateListToCreateWav(windowSize, doubles);
+    }
+
+    private double[] concatenateListToCreateWav(int windowSize, List<double[]> doubles) {
+        int numberOfSamples = windowSize * doubles.size();
+        double[] wav = new double[numberOfSamples];
+        int counter = 0;
+        for (double[] aDouble : doubles) {
+            for (double value : aDouble) {
+                wav[counter] = value;
+                counter += 1;
+            }
+        }
+        return wav;
+    }
+
+    private List<double[]> splitWavIntoWindows(double[] input, int windowSize) {
+        List<double[]> windowList = new ArrayList<double[]>();
+        double[] window = new double[windowSize];
 
         int counter = 0;
-
-        List<double[]> windowList = new ArrayList<double[]>();
-
-        double[] window = new double[windowSize];
         for (double value : input) {
             if (counter < windowSize) {
                 window[counter] = value;
@@ -27,22 +50,25 @@ public class FFT {
                 window = new double[windowSize];
             }
         }
+        return windowList;
+    }
 
+    private List<double[]> transformWindows(List<double[]> windowList, TransformType transformType) {
         List<double[]> fftTransforms = new ArrayList<double[]>();
 
         for (double[] doubles : windowList) {
-            fftTransforms.add(transformWindow(doubles));
+            fftTransforms.add(transformWindow(doubles, transformType));
         }
 
         return fftTransforms;
     }
 
-    private double[] transformWindow(double[] window) {
+    private double[] transformWindow(double[] window, TransformType transformType) {
         double[] tempConversion = new double[window.length];
 
         FastFourierTransformer transformer = new FastFourierTransformer(DftNormalization.STANDARD);
         try {
-            Complex[] complex = transformer.transform(window, TransformType.FORWARD);
+            Complex[] complex = transformer.transform(window, transformType);
 
             for (int i = 0; i < complex.length; i++) {
                 double rr = (complex[i].getReal());
