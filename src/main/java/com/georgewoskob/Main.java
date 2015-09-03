@@ -10,23 +10,47 @@ public class Main {
     private static ArrayWriter arrayWriter = new ArrayWriter();
 
     public static void main(String[] args) throws IOException, WavFileException {
+//        testSuite();
+        readAnalysisAndWriteToWav();
+    }
+
+    private static void testSuite() throws IOException, WavFileException {
         fftIdentity();
+        readAnalysisAndWriteToWav();
         wavArrayTransformationIdentity();
+    }
+
+    private static void readAnalysisAndWriteToWav() throws IOException, WavFileException {
+        int windowSize = 8192;
+        List<double[]> analysis = arrayWriter.readAnalysisFromFile(windowSize, new File("/Users/Thoughtworker/leave/wav/src/main/resources/temp.txt"));
+
+        FFT fft = new FFT();
+        double[] wav = fft.transformBackward(analysis, windowSize);
+        System.out.println("transformed backward");
+
+        WavTransformer wavTransformer = new WavTransformer();
+        wavTransformer.writeArrayToWavFile(wav, new File("/Users/Thoughtworker/leave/wav/src/main/resources/temp.wav"));
+        System.out.println("wrote wav file");
     }
 
     private static void fftIdentity() throws IOException, WavFileException {
         WavTransformer wavTransformer = new WavTransformer();
-        double[] wavArray = wavTransformer.readWavFileToArray(new File("/Users/Thoughtworker/leave/wav/src/main/resources/snares.wav"));
+        double[] wavArray = wavTransformer.readWavFileToArray(new File("/Users/Thoughtworker/leave/wav/src/main/resources/prelude.wav"));
 
         FFT fft = new FFT();
 
-        int windowSize = 1024;
+        int windowSize = 8192;
+        System.out.println("Window size: " + windowSize);
         List<double[]> analysis = fft.transformForward(wavArray, windowSize);
+        System.out.println("transformed forward");
 
         double[] wav = fft.transformBackward(analysis, windowSize);
-        wavTransformer.writeArrayToWavFile(wav, new File("/Users/Thoughtworker/leave/wav/src/main/resources/holyFuckThatWorked.wav"));
+        System.out.println("transformed backward");
 
-        arrayWriter.writeAnalysisToFile(analysis, new File("/Users/Thoughtworker/leave/wav/src/main/resources/analysis.txt"));
+        wavTransformer.writeArrayToWavFile(wav, new File("/Users/Thoughtworker/leave/wav/src/main/resources/holyFuckThatWorked" + windowSize + ".wav"));
+        System.out.println("wrote wav file");
+
+        arrayWriter.writeAnalysisToFile(analysis, new File("/Users/Thoughtworker/leave/wav/src/main/resources/analysis" + windowSize + ".txt"));
         int expectedNumberOfTransforms = wavArray.length / windowSize;
         System.out.println("Number of expected transforms: " + expectedNumberOfTransforms);
         System.out.println("Number of transforms: " + analysis.size());
