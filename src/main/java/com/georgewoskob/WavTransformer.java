@@ -1,4 +1,7 @@
-package com.georgewoskob.wav;
+package com.georgewoskob;
+
+import com.georgewoskob.wav.WavFile;
+import com.georgewoskob.wav.WavFileException;
 
 import java.io.File;
 import java.io.IOException;

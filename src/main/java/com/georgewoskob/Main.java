@@ -1,13 +1,13 @@
 package com.georgewoskob;
 
 import com.georgewoskob.wav.WavFileException;
-import com.georgewoskob.wav.WavTransformer;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
 public class Main {
+    private static ArrayWriter arrayWriter = new ArrayWriter();
 
     public static void main(String[] args) throws IOException, WavFileException {
         WavTransformer wavTransformer = new WavTransformer();
@@ -16,14 +16,7 @@ public class Main {
         FFT fft = new FFT();
         List<double[]> analysis = fft.transform(wavArray, 1024);
 
-        for (double[] doubles : analysis) {
-            String line = "";
-            for (double aDouble : doubles) {
-                String v = String.valueOf(aDouble) + ' ';
-                line += v;
-            }
-            System.out.println(line);
-        }
+        arrayWriter.writeAnalysisToFile(analysis, new File("/Users/Thoughtworker/leave/wav/src/main/resources/analysis.txt"));
         int expectedNumberOfTransforms = wavArray.length / 1024;
         System.out.println("Number of expected transforms: " + expectedNumberOfTransforms);
         System.out.println("Number of transforms: " + analysis.size());
@@ -36,7 +29,7 @@ public class Main {
         double[] wavArray = wavTransformer.wavToArray(new File("/Users/Thoughtworker/leave/wav/src/main/resources/snares.wav"));
 
         File intermediateText = new File("/Users/Thoughtworker/leave/wav/intermediate.txt");
-        arrayWriter.writeArrayToFile(intermediateText, wavArray);
+        arrayWriter.writeArrayToFile(wavArray, intermediateText);
 
         double[] newWavArray = arrayWriter.wavArrayFromFile(intermediateText);
 
