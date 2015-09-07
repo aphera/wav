@@ -4,6 +4,7 @@ import com.georgewoskob.wav.WavFileException;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Main {
@@ -11,7 +12,7 @@ public class Main {
 
     public static void main(String[] args) throws IOException, WavFileException {
 //        testSuite();
-        readAnalysisAndWriteToWav();
+        readWavAndWriteToAnalysis();
     }
 
     private static void testSuite() throws IOException, WavFileException {
@@ -31,6 +32,53 @@ public class Main {
         WavTransformer wavTransformer = new WavTransformer();
         wavTransformer.writeArrayToWavFile(wav, new File("/Users/Thoughtworker/leave/wav/src/main/resources/temp.wav"));
         System.out.println("wrote wav file");
+    }
+
+    private static void readWavAndWriteToAnalysis() throws IOException, WavFileException {
+        long startTime = System.currentTimeMillis();
+        WavTransformer wavTransformer = new WavTransformer();
+        double[] wavArray = wavTransformer.readWavFileToArray(new File("/Users/Thoughtworker/leave/wav/src/main/resources/prelude.wav"));
+
+        FFT fft = new FFT();
+
+        int windowSize = 1024;
+        System.out.println("Window size: " + windowSize);
+        List<double[]> analysis = fft.transformForward(wavArray, windowSize);
+        System.out.println("transformed forward");
+
+        List<int[]> compressedAnalysis = compressAnalysis(analysis, windowSize);
+        System.out.println("Compressed analysis");
+
+        arrayWriter.writeCompressedAnalysisToFile(compressedAnalysis, new File("/Users/Thoughtworker/leave/wav/src/main/resources/compressedAnalysis" + windowSize + ".txt"));
+        long endTime = System.currentTimeMillis();
+        long secondsItTookToDoThis = (endTime - startTime) / 1000;
+        System.out.println("Total time in seconds: " + secondsItTookToDoThis);
+
+    }
+
+    private static List<int[]> compressAnalysis(List<double[]> analysis, int windowSize) {
+        int lowestBucketWithNonZeroValue = windowSize;
+        int highestBucketWithNonZeroValue = -1;
+
+        List<int[]> compressedAnalysis = new ArrayList<int[]>();
+        for (double[] window : analysis) {
+            int[] newWindow = new int[window.length];
+            for (int c = 0; c < window.length; c++) {
+                int valueOfBucket = Double.valueOf(window[c]).intValue();
+                if (valueOfBucket > 0 && c < lowestBucketWithNonZeroValue) {
+                    lowestBucketWithNonZeroValue = c;
+                }
+                if (valueOfBucket > 0 && highestBucketWithNonZeroValue < c) {
+                    highestBucketWithNonZeroValue = c;
+                }
+                newWindow[c] = valueOfBucket;
+            }
+            compressedAnalysis.add(newWindow);
+        }
+        System.out.println("Lowest bucket with non zero value: " + lowestBucketWithNonZeroValue);
+        System.out.println("highest bucket with non zero value: " + highestBucketWithNonZeroValue);
+
+        return compressedAnalysis;
     }
 
     private static void fftIdentity() throws IOException, WavFileException {

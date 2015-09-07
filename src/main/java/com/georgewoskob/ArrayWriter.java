@@ -41,19 +41,55 @@ public class ArrayWriter {
     public void writeAnalysisToFile(List<double[]> analysis, File file) throws FileNotFoundException {
         PrintStream printStream = new PrintStream(new FileOutputStream(file));
 
+        double max = -100;
         int counter = 0;
         for (double[] doubles : analysis) {
             for (double aDouble : doubles) {
+                if (aDouble > max) {
+                    max = aDouble;
+                }
                 printStream.print(String.valueOf(aDouble));
                 counter += 1;
-                printStream.print(' ');
+                printStream.print('.');
             }
             printStream.print('\n');
             counter += 1;
             printStream.flush();
         }
         printStream.close();
-        System.out.println("Number of characters in analysis: " + counter);
+        System.out.println("Number of values in analysis: " + counter);
+        System.out.println("Maximum value in analysis: " + max);
+    }
+
+    public void writeCompressedAnalysisToFile(List<int[]> analysis, File file) throws FileNotFoundException {
+        PrintStream printStream = new PrintStream(new FileOutputStream(file));
+
+        int max = -100;
+        int counter = 0;
+        int zeroCounter = 0;
+        for (int[] ints : analysis) {
+            String line = "";
+            for (int c = 0; c < ints.length; c++) {
+                if (ints[c] > max) {
+                    max = ints[c];
+                }
+                if (ints[c] == 0) {
+                    zeroCounter += 1;
+                }
+                line += String.valueOf(ints[c]);
+                counter += 1;
+                if (c + 1 < ints.length) {
+                    line += '.';
+                }
+            }
+            printStream.print(line + '\n');
+            counter += 1;
+            printStream.flush();
+        }
+        printStream.close();
+        System.out.println("Number of values in compressed analysis: " + counter);
+        System.out.println("Number of zero values in compressed analysis: " + zeroCounter);
+        System.out.println("Maximum value in compressed analysis: " + max);
     }
 
     public List<double[]> readAnalysisFromFile(int windowSize, File rawAnalysis) throws IOException {
@@ -71,7 +107,7 @@ public class ArrayWriter {
     }
 
     private double[] convertStringToDoubleArray(String sCurrentLine) {
-        String[] split = sCurrentLine.split(" ");
+        String[] split = sCurrentLine.split(".");
         double[] potentialWindow = new double[split.length];
         System.out.println("Window has number of buckets: " + potentialWindow.length);
         for (int c = 0; c < split.length; c++) {

@@ -66,7 +66,7 @@ public class FFT {
     private double[] transformWindow(double[] window, TransformType transformType) {
         double[] tempConversion = new double[window.length];
 
-        FastFourierTransformer transformer = new FastFourierTransformer(DftNormalization.STANDARD);
+        FastFourierTransformer transformer = new FastFourierTransformer(DftNormalization.UNITARY);
         try {
             Complex[] complex = transformer.transform(window, transformType);
 
